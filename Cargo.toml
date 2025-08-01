@@ -108,6 +108,12 @@ quant-ml = { path = "crates/ml" }
 [dev-dependencies]
 proptest = { workspace = true }
 tokio-test = "0.4"
+hyper = { workspace = true }
+tower = { workspace = true }
+serde_json = { workspace = true }
+uuid = { workspace = true, features = ["v4"] }
+rand = "0.8"
+chrono = { workspace = true }
 
 [profile.dev]
 opt-level = 0

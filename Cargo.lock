@@ -2000,8 +2000,10 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "axum",
+ "chrono",
  "config",
  "dotenvy",
+ "hyper",
  "proptest",
  "quant-api",
  "quant-db",
@@ -2009,15 +2011,18 @@ dependencies = [
  "quant-models",
  "quant-services",
  "quant-stream",
+ "rand 0.8.5",
  "rust_decimal",
  "rust_decimal_macros",
  "serde",
  "serde_json",
  "tokio",
  "tokio-test",
+ "tower 0.4.13",
  "tower-http",
  "tracing",
  "tracing-subscriber",
+ "uuid",
 ]
 
 [[package]]

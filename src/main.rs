@@ -6,7 +6,6 @@ use quant_models::MatchEvent;
 use quant_services::{DataFeedService, DataFeedConfig, PredictorService, TradingEngine, MarketSimulator, MetricsCollector};
 use quant_api::{create_routes, AppState};
 use rust_decimal_macros::dec;
-use axum::Router;
 use tower_http::cors::CorsLayer;
 use std::sync::Arc;
 use tokio::sync::RwLock;
@@ -31,7 +30,7 @@ async fn main() -> Result<()> {
     info!("🚀 Starting Quant-RS Sports Betting Prediction System");
 
     // Load configuration
-    let config = AppConfig::new()?;
+    let config = Arc::new(AppConfig::new()?);
     info!("✅ Configuration loaded successfully");
     info!("📊 Database: {}", config.database_url());
     info!("🔄 Redis: {}", config.redis_url());
@@ -61,7 +60,7 @@ async fn main() -> Result<()> {
     };
     
     // Initialize prediction service
-    let predictor = PredictorService::new();
+    let predictor = Arc::new(PredictorService::new());
     
     // Initialize trading engine with $10,000 starting bankroll
     let trading_engine = Arc::new(TradingEngine::new(dec!(10000.0)));
@@ -83,7 +82,7 @@ async fn main() -> Result<()> {
     let api_state = AppState {
         trading_engine: trading_engine.clone(),
         market_simulator: market_simulator.clone(),
-        predictor: Arc::new(predictor),
+        predictor: predictor.clone(),
         recent_events: recent_events.clone(),
         recent_predictions: recent_predictions.clone(),
     };
@@ -93,10 +92,11 @@ async fn main() -> Result<()> {
         let router = create_routes()
             .with_state(api_state)
             .layer(CorsLayer::permissive());
+        let config_clone = config.clone();
         
         tokio::spawn(async move {
-            let listener = tokio::net::TcpListener::bind(&config.server_addr()).await.unwrap();
-            info!("🌐 API server starting on {}", config.server_addr());
+            let listener = tokio::net::TcpListener::bind(&config_clone.server_addr()).await.unwrap();
+            info!("🌐 API server starting on {}", config_clone.server_addr());
             axum::serve(listener, router).await.unwrap();
         })
     };
