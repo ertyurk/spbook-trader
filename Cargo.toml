@@ -86,6 +86,7 @@ mockall = "0.12"
 [dependencies]
 tokio = { workspace = true }
 axum = { workspace = true }
+tower-http = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 anyhow = { workspace = true }
@@ -94,6 +95,7 @@ tracing-subscriber = { workspace = true }
 config = { workspace = true }
 dotenvy = { workspace = true }
 rust_decimal = { workspace = true }
+rust_decimal_macros = { workspace = true }
 
 # Workspace crates
 quant-api = { path = "crates/api" }

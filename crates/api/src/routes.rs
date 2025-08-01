@@ -112,20 +112,20 @@ async fn get_system_status(State(state): State<AppState>) -> Json<ApiResponse<se
     let events_count = state.recent_events.read().await.len();
     let predictions_count = state.recent_predictions.read().await.len();
     
-    let mut status = HashMap::new();
-    status.insert("portfolio", serde_json::json!({
+    let mut status = serde_json::Map::new();
+    status.insert("portfolio".to_string(), serde_json::json!({
         "bankroll": portfolio.total_bankroll.to_string(),
         "available": portfolio.available_bankroll.to_string(),
         "active_bets": portfolio.active_bets_count,
         "total_trades": portfolio.total_trades,
         "roi": format!("{:.2}%", portfolio.roi * 100.0)
     }));
-    status.insert("data_pipeline", serde_json::json!({
+    status.insert("data_pipeline".to_string(), serde_json::json!({
         "recent_events": events_count,
         "recent_predictions": predictions_count,
         "status": "active"
     }));
-    status.insert("services", serde_json::json!({
+    status.insert("services".to_string(), serde_json::json!({
         "trading_engine": "online",
         "predictor": "online", 
         "market_simulator": "online"
@@ -133,7 +133,7 @@ async fn get_system_status(State(state): State<AppState>) -> Json<ApiResponse<se
     
     Json(ApiResponse {
         success: true,
-        data: Some(serde_json::Value::Object(status.into_iter().collect())),
+        data: Some(serde_json::Value::Object(status)),
         message: Some("System operational".to_string()),
         pagination: None,
     })
@@ -272,10 +272,11 @@ async fn get_all_markets(State(state): State<AppState>) -> Json<ApiResponse<Hash
         }
     }
     
+    let markets_count = markets.len();
     Json(ApiResponse {
         success: true,
         data: Some(markets),
-        message: Some(format!("Current markets for {} matches", markets.len())),
+        message: Some(format!("Current markets for {} matches", markets_count)),
         pagination: None,
     })
 }

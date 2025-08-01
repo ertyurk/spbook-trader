@@ -65,7 +65,7 @@ impl AppConfig {
 
         let config = Config::builder()
             // Start with default values
-            .set_default("database.url", "postgresql://localhost:5432/quant_rs_dev")?
+            .set_default("database.url", "postgresql://localhost:5432/qtdev")?
             .set_default("database.max_connections", 20)?
             .set_default("redis.url", "redis://localhost:6379")?
             .set_default("redis.stream_key", "sports_events")?
@@ -80,7 +80,10 @@ impl AppConfig {
             .set_default("trading.max_odds", "10.00")?
             .set_default("monitoring.metrics_port", 9090)?
             .set_default("monitoring.health_check_interval_seconds", 30)?
-            .set_default("external_apis.sports_api_base_url", "https://api.sportsdataapi.com")?
+            .set_default(
+                "external_apis.sports_api_base_url",
+                "https://api.sportsdataapi.com",
+            )?
             // Add in settings from configuration file
             .add_source(File::with_name("config/default").required(false))
             .add_source(File::with_name(&format!("config/{}", run_mode)).required(false))
@@ -91,15 +94,15 @@ impl AppConfig {
 
         config.try_deserialize()
     }
-    
+
     pub fn database_url(&self) -> &str {
         &self.database.url
     }
-    
+
     pub fn redis_url(&self) -> &str {
         &self.redis.url
     }
-    
+
     pub fn server_addr(&self) -> String {
         format!("{}:{}", self.server.host, self.server.port)
     }
