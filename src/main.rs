@@ -3,7 +3,8 @@ mod config;
 use anyhow::Result;
 use config::AppConfig;
 use quant_models::MatchEvent;
-use quant_services::{DataFeedService, DataFeedConfig};
+use quant_services::{DataFeedService, DataFeedConfig, PredictorService, TradingEngine, MarketSimulator};
+use rust_decimal_macros::dec;
 use tokio::sync::mpsc;
 use tracing::{info, warn, error};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
@@ -54,12 +55,21 @@ async fn main() -> Result<()> {
         })
     };
     
+    // Initialize prediction service
+    let predictor = PredictorService::new();
+    
+    // Initialize trading engine with $10,000 starting bankroll
+    let trading_engine = TradingEngine::new(dec!(10000.0));
+    
+    // Initialize market simulator
+    let market_simulator = MarketSimulator::new();
+    
     // Start event processor in background
     let processor_handle = tokio::spawn(async move {
         let mut event_count = 0;
         while let Some(event) = event_receiver.recv().await {
             event_count += 1;
-            info!("🏈 Received event #{}: {} - {:?} vs {} vs {}", 
+            info!("🏈 Event #{}: {} - {:?} ({} vs {})", 
                   event_count,
                   event.match_id, 
                   event.event_type,
@@ -67,9 +77,58 @@ async fn main() -> Result<()> {
                   event.team_away
             );
             
-            // TODO: Process event through prediction engine
-            // TODO: Process event through trading engine
-            // TODO: Store event in database
+            // Generate market odds for this event
+            let market_odds = match market_simulator.generate_market_odds(&event).await {
+                Ok(odds) => {
+                    trading_engine.update_market_odds(event.match_id.clone(), odds.clone()).await;
+                    Some(odds)
+                }
+                Err(e) => {
+                    warn!("📊 Failed to generate market odds for {}: {}", event.match_id, e);
+                    None
+                }
+            };
+            
+            // Process event through prediction engine
+            match predictor.predict(&event).await {
+                Ok(prediction) => {
+                    info!("🎯 Generated prediction - Most likely: {:?}", 
+                          prediction.most_likely_outcome());
+                    
+                    // Send prediction to trading engine
+                    match trading_engine.process_prediction(&prediction).await {
+                        Ok(signal) => {
+                            if signal.signal_strength > 0.0 {
+                                info!("💡 Trading signal: {:.1}% strength - {}", 
+                                      signal.signal_strength * 100.0,
+                                      signal.reasoning);
+                                
+                                // Execute trade if signal is strong enough
+                                if signal.signal_strength > 0.3 { // 30% threshold
+                                    match trading_engine.execute_trade(&signal).await {
+                                        Ok(executed) => {
+                                            if executed {
+                                                let summary = trading_engine.get_portfolio_summary().await;
+                                                info!("💼 Portfolio: ${} available, {} active bets, ROI: {:.1}%",
+                                                      summary.available_bankroll,
+                                                      summary.active_bets_count,
+                                                      summary.roi * 100.0);
+                                            }
+                                        }
+                                        Err(e) => error!("❌ Trade execution failed: {}", e),
+                                    }
+                                }
+                            }
+                        }
+                        Err(e) => error!("❌ Trading signal generation failed: {}", e),
+                    }
+                    
+                    // TODO: Store prediction in database
+                }
+                Err(e) => {
+                    error!("❌ Prediction failed for {}: {}", event.match_id, e);
+                }
+            }
         }
     });
     

@@ -6,6 +6,35 @@ use uuid::Uuid;
 use crate::error::{QuantsError, Result};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct SimpleMarketOdds {
+    pub home_win: Decimal,
+    pub draw: Decimal,
+    pub away_win: Decimal,
+}
+
+impl SimpleMarketOdds {
+    pub fn new(home_win: Decimal, draw: Decimal, away_win: Decimal) -> Self {
+        Self { home_win, draw, away_win }
+    }
+    
+    pub fn from_probabilities(home_prob: f64, draw_prob: f64, away_prob: f64, margin: f64) -> Self {
+        // Add bookmaker margin (overround)
+        let total_prob = home_prob + draw_prob + away_prob;
+        let adjusted_total = total_prob * (1.0 + margin);
+        
+        let adjusted_home = (home_prob / total_prob) * adjusted_total;
+        let adjusted_draw = (draw_prob / total_prob) * adjusted_total;
+        let adjusted_away = (away_prob / total_prob) * adjusted_total;
+        
+        Self {
+            home_win: Decimal::from_f64_retain(1.0 / adjusted_home).unwrap_or(Decimal::from(2)),
+            draw: Decimal::from_f64_retain(1.0 / adjusted_draw).unwrap_or(Decimal::from(3)),
+            away_win: Decimal::from_f64_retain(1.0 / adjusted_away).unwrap_or(Decimal::from(2)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct MarketOdds {
     pub id: Uuid,
     pub match_id: String,
