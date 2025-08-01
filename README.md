@@ -1,4 +1,4 @@
-# Quant-RS 🦀
+# Quant-RS  - !EXPERIMENTATION Do not rely on it
 
 A high-performance **sports betting prediction and trading system** built in Rust. Quant-RS combines machine learning models, real-time data processing, and automated trading strategies to predict sports outcomes and execute profitable betting decisions.
 
@@ -316,18 +316,6 @@ cargo audit
 - **Performance Tests**: Validate system under load
 - **Property Tests**: Verify mathematical invariants
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Run the test suite: `./scripts/run_tests.sh`
-6. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🆘 Troubleshooting
 
@@ -375,12 +363,6 @@ cargo test -p quant-models
 - Monitor database query performance
 - Verify Redis is accessible
 
-### Getting Help
-- Check the [documentation](docs/)
-- Review test files for usage examples
-- Open an issue on GitHub
-- Check logs for detailed error messages
-
 ## 🎯 Next Steps
 
 After getting the system running:
@@ -390,7 +372,3 @@ After getting the system running:
 3. **Review Predictions**: Analyze the ML model outputs
 4. **Customize Configuration**: Adjust parameters for your use case
 5. **Extend Functionality**: Add new features or models
-
----
-
-**Happy Trading! 🚀📈**
