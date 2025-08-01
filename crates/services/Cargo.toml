@@ -1,0 +1,23 @@
+[package]
+name = "quant-services"
+version = "0.1.0"
+edition = "2021"
+description = "Core business logic services"
+
+[dependencies]
+tokio = { workspace = true }
+tokio-util = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+serde = { workspace = true }
+chrono = { workspace = true }
+uuid = { workspace = true }
+crossbeam = { workspace = true }
+dashmap = { workspace = true }
+parking_lot = { workspace = true }
+rand = "0.8"
+quant-models = { path = "../models" }
+quant-stream = { path = "../stream" }
+quant-db = { path = "../db" }
+quant-ml = { path = "../ml" }

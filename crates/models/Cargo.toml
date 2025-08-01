@@ -1,0 +1,18 @@
+[package]
+name = "quant-models"
+version = "0.1.0"
+edition = "2021"
+description = "Core data models for the sports betting prediction system"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+chrono = { workspace = true }
+uuid = { workspace = true }
+rust_decimal = { workspace = true }
+rust_decimal_macros = { workspace = true }
+thiserror = { workspace = true }
+sqlx = { workspace = true }
+
+[dev-dependencies]
+proptest = { workspace = true }

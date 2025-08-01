@@ -1,0 +1,20 @@
+[package]
+name = "quant-ml"
+version = "0.1.0"
+edition = "2021"
+description = "Machine learning models and prediction engine"
+
+[dependencies]
+tokio = { workspace = true }
+linfa = { workspace = true }
+linfa-logistic = { workspace = true }
+linfa-preprocessing = { workspace = true }
+ndarray = { workspace = true }
+nalgebra = { workspace = true }
+serde = { workspace = true }
+chrono = { workspace = true }
+uuid = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+quant-models = { path = "../models" }

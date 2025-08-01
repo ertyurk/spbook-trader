@@ -1,0 +1,19 @@
+[package]
+name = "quant-api"
+version = "0.1.0"
+edition = "2021" 
+description = "REST API and WebSocket endpoints"
+
+[dependencies]
+tokio = { workspace = true }
+axum = { workspace = true }
+tower = { workspace = true }
+tower-http = { workspace = true }
+hyper = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+prometheus = { workspace = true }
+quant-models = { path = "../models" }
+quant-services = { path = "../services" }
